@@ -2,6 +2,7 @@ package br.com.ferias.dao;
 
 import br.com.ferias.jdbc.ConnectionFactory;
 import br.com.ferias.model.Cliente;
+import br.com.ferias.model.WebServiceCep;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,9 +45,11 @@ public class ClienteDAO {
             stmt.execute();
             stmt.close();
 
-            JOptionPane.showMessageDialog(null, "Cadastro efetuado com sucesso!");
+            JOptionPane.showMessageDialog(null, "Cadastro efetuado com sucesso!"
+                    ,"Aviso", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Um erro ocorreu:\n" + e);
+            JOptionPane.showMessageDialog(null, "Um erro ocorreu:\n" + e
+                    ,"Atenção!", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -75,9 +78,11 @@ public class ClienteDAO {
             stmt.execute();
             stmt.close();
 
-            JOptionPane.showMessageDialog(null, "Alteração efetuada com sucesso!");
+            JOptionPane.showMessageDialog(null, "Alteração efetuada com sucesso!"
+                    ,"Aviso", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Um erro ocorreu:\n" + e);
+            JOptionPane.showMessageDialog(null, "Um erro ocorreu:\n" + e
+                    ,"Atenção!", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -93,7 +98,8 @@ public class ClienteDAO {
 
             JOptionPane.showMessageDialog(null, "Cliente excluido com sucesso!");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Um erro ocorreu:\n" + e);
+            JOptionPane.showMessageDialog(null, "Um erro ocorreu:\n" + e
+                    ,"Atenção!", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -128,7 +134,8 @@ public class ClienteDAO {
             return clientes;
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao executar consulta: \n" + e);
+            JOptionPane.showMessageDialog(null, "Erro ao executar consulta: \n" + e
+                    ,"Atenção!", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
@@ -166,7 +173,8 @@ public class ClienteDAO {
             return clientes;
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao executar consulta: \n" + e);
+            JOptionPane.showMessageDialog(null, "Erro ao executar consulta: \n" + e
+                    ,"Atenção!", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
@@ -202,11 +210,30 @@ public class ClienteDAO {
             return cli;
             
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao executar consulta: \n" + e);
+            JOptionPane.showMessageDialog(null, "Erro ao executar consulta: \n" + e
+                    ,"Atenção!", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
     
-    //lembrar de adicionar comentários na maioria dos campos 
+    public Cliente buscaCep(String cep) {
+       
+        WebServiceCep webServiceCep = WebServiceCep.searchCep(cep);
+       
+        Cliente cli = new Cliente();
+
+        if (webServiceCep.wasSuccessful()) {
+            cli.setEndereco(webServiceCep.getLogradouroFull());
+            cli.setCidade(webServiceCep.getCidade());
+            cli.setBairro(webServiceCep.getBairro());
+            cli.setEstado(webServiceCep.getUf());
+            return cli;
+        } else {
+            JOptionPane.showMessageDialog(null, "Erro numero: " + webServiceCep.getResulCode());
+            JOptionPane.showMessageDialog(null, "Descrição do erro: " + webServiceCep.getResultText());
+            return null;
+        }
+
+    }
     
 }
